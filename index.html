@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crew Guide — Coming Soon</title>
+<meta name="description" content="Crew Guide — The Aviation Professional's Companion. Layover intelligence for flight crews worldwide. Launching soon.">
+<meta property="og:title" content="Crew Guide — Coming Soon">
+<meta property="og:description" content="The Aviation Professional's Companion. Layover intelligence for flight crews worldwide.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://crewguide.aero">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deep: #04080f;
+    --bg-card: #060d1e;
+    --bg-card-2: #0b1628;
+    --blue: #4191ff;
+    --cyan: #00d4ff;
+    --blue-deep: #1a4fd6;
+    --red: #c0152a;
+    --text-bright: #ffffff;
+    --text-soft: #7aa8d8;
+    --text-dim: #2a3f5f;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-deep);
+    min-height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text-bright);
+    overflow-x: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ═══ ATMOSPHERIC BACKGROUND ═══ */
+  .bg-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Radial glow top */
+  .bg-glow-1 {
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 900px;
+    background: radial-gradient(circle, rgba(30, 80, 200, 0.12) 0%, transparent 60%);
+  }
+  .bg-glow-2 {
+    position: absolute;
+    bottom: -30%;
+    right: -10%;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(0, 180, 255, 0.08) 0%, transparent 60%);
+  }
+
+  /* Star field */
+  .stars {
+    position: absolute;
+    inset: 0;
+    opacity: 0.5;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 0.7; }
+  }
+
+  /* Grid lines (faint) */
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(65, 145, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(65, 145, 255, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  /* ═══ MAIN CONTENT ═══ */
+  .wrap {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px 40px;
+    min-height: 100vh;
+  }
+
+  /* Top status bar */
+  .status-bar {
+    position: absolute;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeDown 1s ease 0.2s forwards;
+  }
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* ═══ LOGO ═══ */
+  .logo-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 34px;
+    opacity: 0;
+    animation: fadeUp 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards;
+  }
+
+  .logo-emblem {
+    filter: drop-shadow(0 0 30px rgba(0, 180, 255, 0.35));
+    animation: floaty 6s ease-in-out infinite;
+  }
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .logo-emblem svg { display: block; width: 150px; height: 150px; }
+
+  .wordmark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .wm-main {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+  }
+  .wm-crew {
+    font-weight: 800;
+    font-size: clamp(40px, 9vw, 68px);
+    color: var(--text-bright);
+    letter-spacing: clamp(6px, 2vw, 12px);
+    line-height: 1;
+  }
+  .wm-guide {
+    font-weight: 200;
+    font-size: clamp(40px, 9vw, 68px);
+    color: var(--blue);
+    letter-spacing: clamp(6px, 2vw, 12px);
+    line-height: 1;
+  }
+  .wm-rule {
+    width: 100%;
+    max-width: 280px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blue) 30%, var(--cyan) 50%, var(--blue) 70%, transparent);
+    margin: 4px 0;
+  }
+  .wm-tag {
+    font-weight: 300;
+    font-size: clamp(10px, 2.4vw, 13px);
+    color: var(--text-soft);
+    letter-spacing: clamp(3px, 1vw, 5px);
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /* ═══ COMING SOON ═══ */
+  .coming-soon {
+    margin-top: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    opacity: 0;
+    animation: fadeUp 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.7s forwards;
+  }
+  .cs-label {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(20px, 5vw, 30px);
+    font-weight: 700;
+    letter-spacing: clamp(4px, 1.5vw, 8px);
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--text-bright), var(--blue), var(--cyan), var(--blue), var(--text-bright));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 6s linear infinite;
+  }
+  @keyframes shimmer {
+    to { background-position: 200% center; }
+  }
+  .cs-sub {
+    font-weight: 300;
+    font-size: clamp(13px, 3vw, 15px);
+    color: var(--text-soft);
+    text-align: center;
+    max-width: 440px;
+    line-height: 1.6;
+  }
+
+  /* ═══ EMAIL SIGNUP ═══ */
+  .signup {
+    margin-top: 38px;
+    width: 100%;
+    max-width: 440px;
+    opacity: 0;
+    animation: fadeUp 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.95s forwards;
+  }
+  .signup-form {
+    display: flex;
+    gap: 10px;
+    background: var(--bg-card-2);
+    border: 1px solid rgba(65, 145, 255, 0.25);
+    border-radius: 14px;
+    padding: 8px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .signup-form:focus-within {
+    border-color: rgba(65, 145, 255, 0.6);
+    box-shadow: 0 0 24px rgba(65, 145, 255, 0.15);
+  }
+  .signup-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-bright);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    padding: 12px 16px;
+    min-width: 0;
+  }
+  .signup-input::placeholder { color: #4a6080; }
+  .signup-btn {
+    background: linear-gradient(135deg, var(--blue), var(--blue-deep));
+    border: none;
+    border-radius: 9px;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 1px;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    white-space: nowrap;
+  }
+  .signup-btn:hover {
+    filter: brightness(1.12);
+    box-shadow: 0 4px 20px rgba(65, 145, 255, 0.4);
+    transform: translateY(-1px);
+  }
+  .signup-btn:active { transform: translateY(0); }
+  .signup-note {
+    margin-top: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: #4a6080;
+    text-align: center;
+  }
+  .signup-success {
+    display: none;
+    background: rgba(0, 200, 100, 0.08);
+    border: 1px solid rgba(0, 200, 100, 0.3);
+    border-radius: 14px;
+    padding: 18px 24px;
+    text-align: center;
+    color: #50e090;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* ═══ FEATURES PREVIEW ═══ */
+  .features {
+    margin-top: 60px;
+    display: flex;
+    gap: clamp(20px, 5vw, 48px);
+    flex-wrap: wrap;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeUp 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) 1.2s forwards;
+  }
+  .feat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    max-width: 130px;
+    text-align: center;
+  }
+  .feat-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue);
+  }
+  .feat-icon svg { width: 26px; height: 26px; }
+  .feat-text {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-soft);
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+  }
+
+  /* ═══ FOOTER ═══ */
+  footer {
+    position: relative;
+    z-index: 1;
+    padding: 28px 24px;
+    text-align: center;
+    border-top: 1px solid rgba(65, 145, 255, 0.08);
+  }
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .footer-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--text-soft);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--cyan); }
+  .footer-copy {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+  }
+  .footer-domain {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--blue);
+  }
+
+  /* ═══ ANIMATIONS ═══ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .signup-form { flex-direction: column; }
+    .signup-btn { width: 100%; padding: 14px; }
+    .features { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<div class="bg-layer">
+  <div class="grid-bg"></div>
+  <div class="bg-glow-1"></div>
+  <div class="bg-glow-2"></div>
+  <div class="stars" id="stars"></div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <span class="status-dot"></span>
+  <span>System Initializing</span>
+</div>
+
+<main class="wrap">
+
+  <!-- LOGO -->
+  <div class="logo-zone">
+    <div class="logo-emblem">
+      <svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="globeGrad" cx="38%" cy="32%" r="65%">
+            <stop offset="0%" stop-color="#152d5c"/>
+            <stop offset="100%" stop-color="#050c1a"/>
+          </radialGradient>
+          <clipPath id="globeClip"><circle cx="48" cy="48" r="43"/></clipPath>
+          <filter id="routeGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="2" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <linearGradient id="routeGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#4191ff"/>
+            <stop offset="50%" stop-color="#00d4ff"/>
+            <stop offset="100%" stop-color="#4191ff"/>
+          </linearGradient>
+          <linearGradient id="planeGrad" x1="100%" y1="0%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#f0f4ff"/>
+            <stop offset="65%" stop-color="#dde6f8"/>
+            <stop offset="100%" stop-color="#a8b8d4"/>
+          </linearGradient>
+          <linearGradient id="wingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#e8eeff"/>
+            <stop offset="100%" stop-color="#b0bede"/>
+          </linearGradient>
+          <linearGradient id="wingletGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#dde6f8"/>
+            <stop offset="100%" stop-color="#9aaace"/>
+          </linearGradient>
+          <linearGradient id="nacGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#060d1e"/>
+            <stop offset="100%" stop-color="#1a2848"/>
+          </linearGradient>
+          <linearGradient id="finGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#dde6f8"/>
+            <stop offset="100%" stop-color="#9aaace"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Globe -->
+        <circle cx="48" cy="48" r="43" fill="url(#globeGrad)"/>
+        <g clip-path="url(#globeClip)" fill="none" stroke="#4191ff" opacity="0.18">
+          <ellipse cx="48" cy="48" rx="43" ry="12" stroke-width="0.8"/>
+          <ellipse cx="48" cy="48" rx="43" ry="26" stroke-width="0.8"/>
+          <ellipse cx="48" cy="48" rx="12" ry="43" stroke-width="0.8"/>
+          <ellipse cx="48" cy="48" rx="26" ry="43" stroke-width="0.8"/>
+          <line x1="5" y1="48" x2="91" y2="48" stroke-width="0.7"/>
+          <line x1="48" y1="5" x2="48" y2="91" stroke-width="0.7"/>
+        </g>
+        <circle cx="48" cy="48" r="43" stroke="#4191ff" stroke-width="1.5" fill="none"/>
+
+        <!-- Route -->
+        <path d="M 14 76 C 22 28 65 14 78 20" stroke="url(#routeGrad)" stroke-width="1.6" fill="none" stroke-linecap="round" filter="url(#routeGlow)"/>
+        <circle cx="14" cy="76" r="5.5" fill="#1a4fd6" stroke="#4191ff" stroke-width="1.8"/>
+        <circle cx="14" cy="76" r="2.2" fill="white"/>
+        <circle cx="78" cy="20" r="5.5" fill="#c0152a" stroke="#e63946" stroke-width="1.8"/>
+        <circle cx="78" cy="20" r="2.2" fill="white"/>
+
+        <!-- Aircraft at t=1/3 -->
+        <g transform="translate(31,39) rotate(-48) scale(0.18)">
+          <path d="M 20,-9 L -25,-9 L -68,-52 L -55,-52 Z" fill="url(#wingGrad)"/>
+          <line x1="20" y1="-9" x2="-55" y2="-52" stroke="#8090a8" stroke-width="1" opacity="0.6"/>
+          <path d="M 20,-9 L -55,-52 L -53,-54 L 22,-10 Z" fill="#8090b0" opacity="0.18"/>
+          <path d="M -55,-52 L -68,-52 L -71,-63 L -67,-64 Z" fill="url(#wingletGrad)" stroke="#6878a0" stroke-width="0.5"/>
+          <line x1="-55" y1="-52" x2="-67" y2="-64" stroke="#7888a8" stroke-width="0.8" opacity="0.7"/>
+          <line x1="-55" y1="-52" x2="-68" y2="-52" stroke="#90a0c0" stroke-width="0.6" opacity="0.5"/>
+          <circle cx="-55" cy="-52" r="2.5" fill="#ff1a1a"/>
+          <path d="M 20,9 L -25,9 L -68,52 L -55,52 Z" fill="url(#wingGrad)"/>
+          <line x1="20" y1="9" x2="-55" y2="52" stroke="#8090a8" stroke-width="1" opacity="0.6"/>
+          <path d="M 20,9 L -55,52 L -53,54 L 22,10 Z" fill="#8090b0" opacity="0.18"/>
+          <path d="M -55,52 L -68,52 L -71,63 L -67,64 Z" fill="url(#wingletGrad)" stroke="#6878a0" stroke-width="0.5"/>
+          <line x1="-55" y1="52" x2="-67" y2="64" stroke="#7888a8" stroke-width="0.8" opacity="0.7"/>
+          <line x1="-55" y1="52" x2="-68" y2="52" stroke="#90a0c0" stroke-width="0.6" opacity="0.5"/>
+          <circle cx="-55" cy="52" r="2.5" fill="#00cc00"/>
+          <path d="M -22,-9 C -28,-13 -46,-18 -60,-17 C -68,-16.5 -72,-14.5 -72,-13 C -69,-14 -56,-15.5 -40,-16 C -33,-16 -22,-14 -22,-10.5 Z" fill="url(#nacGrad)" stroke="#2a50a0" stroke-width="0.8"/>
+          <ellipse cx="-72" cy="-14" rx="2" ry="3.5" fill="#050c18" stroke="#00b8f0" stroke-width="1"/>
+          <ellipse cx="-72" cy="-14" rx="1" ry="1.8" fill="#00c8ff" opacity="0.9"/>
+          <path d="M -22,9 C -28,13 -46,18 -60,17 C -68,16.5 -72,14.5 -72,13 C -69,14 -56,15.5 -40,16 C -33,16 -22,14 -22,10.5 Z" fill="url(#nacGrad)" stroke="#2a50a0" stroke-width="0.8"/>
+          <ellipse cx="-72" cy="14" rx="2" ry="3.5" fill="#050c18" stroke="#00b8f0" stroke-width="1"/>
+          <ellipse cx="-72" cy="14" rx="1" ry="1.8" fill="#00c8ff" opacity="0.9"/>
+          <path d="M 84,0 C 80,-1.5 74,-3 68,-4.5 C 58,-6.5 42,-8.5 22,-9 C 0,-9.5 -20,-9.5 -40,-9 C -55,-8.5 -68,-7.5 -78,-6 C -88,-4.5 -94,-3 -97,-1.5 C -100,-0.5 -104,0 -104,0 C -104,0 -100,0.5 -97,1.5 C -94,3 -88,4.5 -78,6 C -68,7.5 -55,8.5 -40,9 C -20,9.5 0,9.5 22,9 C 42,8.5 58,6.5 68,4.5 C 74,3 80,1.5 84,0 Z" fill="url(#planeGrad)"/>
+          <path d="M 67,0 C 63,-4 54,-7 44,-7.2 L 44,7.2 C 54,7 63,4 67,0 Z" fill="#2a5aaa" opacity="0.5"/>
+          <line x1="42" y1="-8.5" x2="42" y2="8.5" stroke="#90a8cc" stroke-width="0.6" opacity="0.4"/>
+          <circle cx="27"  cy="-6.2" r="1.8" fill="#4a88d8" opacity="0.7"/>
+          <circle cx="13"  cy="-6.2" r="1.8" fill="#4a88d8" opacity="0.65"/>
+          <circle cx="-1"  cy="-6.2" r="1.8" fill="#4a88d8" opacity="0.60"/>
+          <circle cx="-15" cy="-6.2" r="1.8" fill="#4a88d8" opacity="0.55"/>
+          <circle cx="-29" cy="-6.2" r="1.8" fill="#4a88d8" opacity="0.50"/>
+          <circle cx="27"  cy="6.2" r="1.8" fill="#4a88d8" opacity="0.7"/>
+          <circle cx="13"  cy="6.2" r="1.8" fill="#4a88d8" opacity="0.65"/>
+          <circle cx="-1"  cy="6.2" r="1.8" fill="#4a88d8" opacity="0.60"/>
+          <circle cx="-15" cy="6.2" r="1.8" fill="#4a88d8" opacity="0.55"/>
+          <circle cx="-29" cy="6.2" r="1.8" fill="#4a88d8" opacity="0.50"/>
+          <path d="M -80,-5 L -92,-5 L -108,-25 L -100,-25 Z" fill="url(#finGrad)"/>
+          <line x1="-80" y1="-5" x2="-108" y2="-25" stroke="#7888a8" stroke-width="0.9" opacity="0.7"/>
+          <path d="M -80,5 L -92,5 L -108,25 L -100,25 Z" fill="url(#finGrad)"/>
+          <line x1="-80" y1="5" x2="-108" y2="25" stroke="#7888a8" stroke-width="0.9" opacity="0.7"/>
+          <path d="M -80,-3 L -92,-3 L -106,-0.5 L -106,0.5 L -92,3 L -80,3 Z" fill="url(#finGrad)" opacity="0.85"/>
+          <line x1="-80" y1="-3" x2="-106" y2="-0.5" stroke="#7888a8" stroke-width="0.7" opacity="0.6"/>
+          <circle cx="-106" cy="0" r="1.2" fill="#8898b8"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="wordmark">
+      <div class="wm-main">
+        <span class="wm-crew">CREW</span><span class="wm-guide">GUIDE</span>
+      </div>
+      <div class="wm-rule"></div>
+      <div class="wm-tag">Aviation Professional's Companion</div>
+    </div>
+  </div>
+
+  <!-- COMING SOON -->
+  <div class="coming-soon">
+    <div class="cs-label">Coming Soon</div>
+    <p class="cs-sub">Layover intelligence for flight crews worldwide. Handling, maintenance, transport, accommodation and local insight — all in one place, across 500+ airports.</p>
+  </div>
+
+  <!-- EMAIL SIGNUP -->
+  <div class="signup">
+    <div class="signup-form" id="signupForm">
+      <input type="email" class="signup-input" id="emailInput" placeholder="your@email.com" autocomplete="email">
+      <button class="signup-btn" id="signupBtn">NOTIFY ME</button>
+    </div>
+    <div class="signup-success" id="signupSuccess">
+      ✓ You're on the list. We'll be in touch when we launch.
+    </div>
+    <p class="signup-note">Be the first to know when Crew Guide goes live.</p>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke-opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="feat-text">Ground Handling &amp; FBOs</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+      </div>
+      <div class="feat-text">Maintenance &amp; MRO</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 12h18M3 12a9 9 0 0 1 9-9 9 9 0 0 1 9 9M3 12a9 9 0 0 0 9 9 9 9 0 0 0 9-9"/>
+          <path d="M12 3v18" stroke-opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="feat-text">500+ Airports Worldwide</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+      </div>
+      <div class="feat-text">Layover Essentials</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-domain">crewguide.aero</div>
+    <div class="footer-links">
+      <a href="mailto:hello@crewguide.aero">Contact</a>
+      <a href="#" id="privacyLink">Privacy</a>
+      <a href="#" id="termsLink">Terms</a>
+    </div>
+    <div class="footer-copy">© 2026 Crew Guide Limited · Hong Kong SAR</div>
+  </div>
+</footer>
+
+<script>
+  // ═══ STAR FIELD ═══
+  (function generateStars() {
+    const container = document.getElementById('stars');
+    const count = 60;
+    for (let i = 0; i < count; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      const size = Math.random() * 2 + 0.5;
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.setProperty('--dur', (Math.random() * 3 + 2) + 's');
+      star.style.setProperty('--delay', (Math.random() * 4) + 's');
+      container.appendChild(star);
+    }
+  })();
+
+  // ═══ EMAIL SIGNUP (in-memory, demo) ═══
+  // NOTE: This is a front-end demo. To actually collect emails, connect this
+  // to a backend, a form service (Formspree, Getform), or an email tool
+  // (Mailchimp, ConvertKit, Resend) when the site goes live.
+  const form = document.getElementById('signupForm');
+  const input = document.getElementById('emailInput');
+  const btn = document.getElementById('signupBtn');
+  const success = document.getElementById('signupSuccess');
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function submitEmail() {
+    const email = input.value.trim();
+    if (!isValidEmail(email)) {
+      input.style.color = '#ff6070';
+      input.focus();
+      setTimeout(() => { input.style.color = ''; }, 1500);
+      return;
+    }
+    // In a real deployment, send `email` to your backend / form service here.
+    form.style.display = 'none';
+    success.style.display = 'block';
+  }
+
+  btn.addEventListener('click', submitEmail);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submitEmail();
+  });
+
+  // Placeholder links for legal docs (to be filled when live)
+  document.getElementById('privacyLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Privacy Policy — coming soon.');
+  });
+  document.getElementById('termsLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Terms & Conditions — coming soon.');
+  });
+</script>
+
+</body>
+</html>
