@@ -630,30 +630,73 @@
     }
   })();
 
-  // ═══ EMAIL SIGNUP (in-memory, demo) ═══
-  // NOTE: This is a front-end demo. To actually collect emails, connect this
-  // to a backend, a form service (Formspree, Getform), or an email tool
-  // (Mailchimp, ConvertKit, Resend) when the site goes live.
+  // ═══ EMAIL SIGNUP → Supabase `waitlist` table ═══
+  // The key below is the PUBLISHABLE (anon) key — it is designed to be public.
+  // Row Level Security grants anon INSERT only: with this key the list cannot
+  // be read, counted, updated or deleted (all return 42501 permission denied),
+  // and an inserted row cannot be read back either.
+  // `Prefer: return=minimal` is REQUIRED: asking for the row back needs SELECT
+  // rights, which anon does not have — the insert would fail with 401.
+  const SUPABASE_URL = 'https://ksghlfebtltxalahurwu.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_2NW8BgxBLuN9Ri_2sVanYg_t9hLZgqh';
+
   const form = document.getElementById('signupForm');
   const input = document.getElementById('emailInput');
   const btn = document.getElementById('signupBtn');
   const success = document.getElementById('signupSuccess');
+  const note = document.querySelector('.signup-note');
+  const noteDefault = note.textContent;
+  const btnDefault = btn.textContent;
 
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  function submitEmail() {
+  function flagInput() {
+    input.style.color = '#ff6070';
+    input.focus();
+    setTimeout(() => { input.style.color = ''; }, 1500);
+  }
+
+  async function submitEmail() {
     const email = input.value.trim();
     if (!isValidEmail(email)) {
-      input.style.color = '#ff6070';
-      input.focus();
-      setTimeout(() => { input.style.color = ''; }, 1500);
+      flagInput();
       return;
     }
-    // In a real deployment, send `email` to your backend / form service here.
-    form.style.display = 'none';
-    success.style.display = 'block';
+
+    btn.disabled = true;
+    btn.textContent = 'SENDING…';
+    note.textContent = noteDefault;
+    note.style.color = '';
+
+    try {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/waitlist', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify({ email: email }),
+      });
+
+      // 409 = already on the list (unique index on lower(email)). From the
+      // visitor's point of view that is a success, not something to report.
+      if (!res.ok && res.status !== 409) throw new Error('HTTP ' + res.status);
+
+      form.style.display = 'none';
+      success.style.display = 'block';
+    } catch (err) {
+      console.error('waitlist signup failed', err);
+      note.textContent = 'Something went wrong — please try again, or email hello@crewguide.aero';
+      note.style.color = '#ff6070';
+      flagInput();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = btnDefault;
+    }
   }
 
   btn.addEventListener('click', submitEmail);
