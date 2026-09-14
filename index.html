@@ -715,8 +715,38 @@
   });
 </script>
 
-<!-- Vercel Web Analytics : le dashboard seul ne compte rien sur un site
-     statique, l'injection automatique ne vaut que pour les frameworks. -->
-<script defer src="/_vercel/insights/script.js"></script>
+<!-- Compteur de visites — table page_views + fonction bump_page_view (Supabase).
+     La table est en lecture seule pour anon ; l'increment passe par la fonction
+     SECURITY DEFINER, donc le compteur ne peut etre ni remis a zero ni fausse.
+     Une visite comptee par session, pas a chaque rechargement. -->
+<script>
+(function () {
+  var URL_BASE = 'https://ksghlfebtltxalahurwu.supabase.co';
+  var KEY = 'sb_publishable_2NW8BgxBLuN9Ri_2sVanYg_t9hLZgqh';
+  var PAGE_ID = 'landing';
+
+  function alreadyCounted() {
+    try { return sessionStorage.getItem('cg_counted') === '1'; }
+    catch (e) { return false; }
+  }
+  function markCounted() {
+    try { sessionStorage.setItem('cg_counted', '1'); } catch (e) {}
+  }
+
+  if (alreadyCounted()) return;
+
+  fetch(URL_BASE + '/rest/v1/rpc/bump_page_view', {
+    method: 'POST',
+    headers: {
+      'apikey': KEY,
+      'Authorization': 'Bearer ' + KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ p_id: PAGE_ID })
+  }).then(function (r) {
+    if (r.ok) markCounted();
+  }).catch(function () { /* le compteur ne doit jamais casser la page */ });
+})();
+</script>
 </body>
 </html>
