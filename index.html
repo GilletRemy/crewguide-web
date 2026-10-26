@@ -641,9 +641,9 @@
   <div class="footer-inner">
     <div class="footer-domain">crewguide.aero</div>
     <div class="footer-links">
-      <a href="mailto:hello@crewguide.aero">Contact</a>
-      <a href="#" id="privacyLink">Privacy</a>
-      <a href="#" id="termsLink">Terms</a>
+      <a href="mailto:contact@crewguide.aero">Contact</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
     </div>
     <div class="footer-copy">© 2026 Crew Guide Limited · Hong Kong SAR</div>
   </div>
@@ -728,7 +728,7 @@
       success.style.display = 'block';
     } catch (err) {
       console.error('waitlist signup failed', err);
-      note.textContent = 'Something went wrong — please try again, or email hello@crewguide.aero';
+      note.textContent = 'Something went wrong — please try again, or email contact@crewguide.aero';
       note.style.color = '#ff6070';
       flagInput();
     } finally {
@@ -742,15 +742,6 @@
     if (e.key === 'Enter') submitEmail();
   });
 
-  // Placeholder links for legal docs (to be filled when live)
-  document.getElementById('privacyLink').addEventListener('click', (e) => {
-    e.preventDefault();
-    alert('Privacy Policy — coming soon.');
-  });
-  document.getElementById('termsLink').addEventListener('click', (e) => {
-    e.preventDefault();
-    alert('Terms & Conditions — coming soon.');
-  });
 </script>
 
 <!-- Compteur de visites — table page_views + fonction bump_page_view (Supabase).
