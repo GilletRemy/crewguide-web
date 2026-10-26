@@ -585,6 +585,8 @@
   <div class="signup">
     <div class="signup-form" id="signupForm">
       <input type="email" class="signup-input" id="emailInput" placeholder="your@email.com" autocomplete="email">
+      <!-- Champ piège : invisible pour un humain, rempli par les robots. -->
+      <input type="text" id="siteInput" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
       <button class="signup-btn" id="signupBtn">NOTIFY ME</button>
     </div>
     <div class="signup-success" id="signupSuccess">
@@ -707,7 +709,9 @@
     note.style.color = '';
 
     try {
-      const res = await fetch(SUPABASE_URL + '/rest/v1/waitlist', {
+      // Passe par inscrire_liste_attente (migration 221) : limite par visiteur
+      // et par heure, champ piège, doublon traité côté base comme un succès.
+      const res = await fetch(SUPABASE_URL + '/rest/v1/rpc/inscrire_liste_attente', {
         method: 'POST',
         headers: {
           'apikey': SUPABASE_ANON_KEY,
@@ -715,12 +719,10 @@
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal',
         },
-        body: JSON.stringify({ email: email }),
+        body: JSON.stringify({ p_email: email, p_site: document.getElementById('siteInput').value }),
       });
 
-      // 409 = already on the list (unique index on lower(email)). From the
-      // visitor's point of view that is a success, not something to report.
-      if (!res.ok && res.status !== 409) throw new Error('HTTP ' + res.status);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
 
       form.style.display = 'none';
       success.style.display = 'block';
