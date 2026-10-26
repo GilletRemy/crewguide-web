@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy Policy — Crew Guide</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f0ede6; color: #3a3a48;
+    padding: 32px 20px; line-height: 1.6;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; background: #fff;
+          border-radius: 18px; padding: 36px 30px;
+          box-shadow: 0 8px 40px rgba(0,0,0,.10); }
+  @media (prefers-color-scheme: dark) {
+    body { background:#15151c; color:#e8e6ef; }
+    .wrap { background:#20202a; }
+    .muted { color:#9a9ab0; }
+    th { background:#2a2a35 !important; }
+    td, th { border-color:#3a3a48 !important; }
+    .todo { background:#3a2a00 !important; border-color:#7a5a00 !important; }
+  }
+  .plane { font-size: 34px; }
+  h1 { font-size: 24px; font-weight: 600; margin: 8px 0 4px; }
+  h2 { font-size: 17px; font-weight: 600; margin: 28px 0 8px; }
+  .muted { color: #7a7a90; font-size: 14px; }
+  p, li { font-size: 15px; margin-bottom: 8px; }
+  ul { padding-left: 20px; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 14px; }
+  th, td { border: 1px solid #ddd; padding: 7px 9px; text-align: left; vertical-align: top; }
+  th { background: #f5f3ee; font-weight: 600; }
+  .todo { background:#fff8e1; border:1px solid #ffd54f; border-radius:10px;
+          padding:12px 14px; margin:14px 0; font-size:14px; }
+  code { font-size: 13px; background: rgba(128,128,128,.15); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="plane">🛫</div>
+  <h1>Privacy Policy</h1>
+  <p class="muted">Crew Guide — last updated 26 October 2026</p>
+
+
+  <h2>1. Who we are</h2>
+  <p>Crew Guide is a mobile application providing operational ground information
+     for flight crews — airports, handling, customs, transport, accommodation
+     and catering. It is aimed at airline, business and general aviation crews.</p>
+  <p>Data controller: the publisher of Crew Guide, a company being
+     incorporated in Hong Kong; its name and registered address will be added
+     here. Contact:
+     <a href="mailto:contact@crewguide.aero">contact@crewguide.aero</a>.</p>
+
+  <h2>2. What we collect, and why</h2>
+  <table>
+    <tr><th>Data</th><th>Why</th><th>Legal basis</th></tr>
+    <tr><td>Email address and password</td><td>To create and secure your account</td><td>Contract</td></tr>
+    <tr><td>Username</td><td>Shown next to the reviews you publish</td><td>Contract</td></tr>
+    <tr><td>Reviews and contributions you submit</td><td>To review, publish and improve the shared database</td><td>Contract</td></tr>
+    <tr><td>Photos you upload</td><td>To illustrate venues and airport facilities</td><td>Contract</td></tr>
+    <tr><td>Customs and health declarations you fill in — full name, passport number, nationality, date of birth, address, phone, occupation, employer, emergency contact, flight details</td><td>To generate the customs and health forms you request, and to let you find them again later</td><td>Consent</td></tr>
+    <tr><td>Catering orders</td><td>To transmit and track your order</td><td>Contract</td></tr>
+    <tr><td>Messages you send us</td><td>To answer you</td><td>Legitimate interest</td></tr>
+  </table>
+
+  <h2>3. Health-related data</h2>
+  <p>Some customs forms — notably disinsection and international health
+     certificates — contain health-related information. Under Article 9 GDPR
+     this is a special category of personal data. <strong>We only process it on
+     your explicit consent</strong>, given when you fill in the form, and only
+     to produce the document you asked for. You can delete these declarations at
+     any time from the app.</p>
+
+  <h2>4. What stays on your phone</h2>
+  <ul>
+    <li><strong>Passport scanning is performed entirely on your device</strong>
+        (Apple Vision). The photograph of your passport is never uploaded, never
+        transmitted and never stored on our servers. Only the fields you choose
+        to keep are saved.</li>
+    <li>Your personal customs notes are stored locally on the device and are not
+        sent to our servers.</li>
+  </ul>
+
+  <h2>5. Where your data is stored</h2>
+  <p>Our database and authentication are operated by <strong>Supabase</strong>,
+     in a data centre located in <strong>Tokyo, Japan</strong>. If you are in the
+     European Economic Area, this is a transfer outside the EEA. Japan benefits
+     from an <strong>adequacy decision</strong> adopted by the European
+     Commission on 23 January 2019, which recognises that it offers a level of
+     protection essentially equivalent to EU law. No further safeguards are
+     therefore required for this transfer.</p>
+
+  <h2>6. Who else processes data</h2>
+  <table>
+    <tr><th>Service</th><th>Role</th><th>Does it receive your personal data?</th></tr>
+    <tr><td>Supabase</td><td>Hosting, database, authentication, file storage</td><td><strong>Yes</strong> — all of the above</td></tr>
+    <tr><td>Resend</td><td>Sends a notification to our moderators when a contribution is submitted</td><td><strong>Yes</strong> — limited to the contribution and its author</td></tr>
+    <tr><td>Anthropic (Claude API)</td><td>Helps pre-fill venue records for moderator review</td><td>No — venue information only, never crew data</td></tr>
+    <tr><td>Google Places</td><td>Cross-checks venue addresses and opening hours</td><td>No — venue information only</td></tr>
+    <tr><td>aviationweather.gov</td><td>METAR / TAF for the airport you select</td><td>No — an ICAO code only</td></tr>
+    <tr><td>sunrise-sunset.org</td><td>Sunrise and sunset times</td><td>No — coordinates only</td></tr>
+    <tr><td>OpenStreetMap</td><td>Map tiles</td><td>No — map tile requests only</td></tr>
+  </table>
+  <p class="muted">The app also offers links that open other apps — Apple Maps,
+     Google Maps, Waze, WhatsApp. Once you follow such a link you leave Crew
+     Guide, and the policy of that service applies.</p>
+
+  <h2>7. What we never do</h2>
+  <ul>
+    <li>We do not sell your data.</li>
+    <li>We do not use it for advertising, and the app contains no advertising
+        or third-party tracking SDK.</li>
+    <li>We do not build behavioural profiles.</li>
+  </ul>
+
+  <h2>8. How long we keep it</h2>
+  <ul>
+    <li><strong>Account data</strong>: as long as your account exists.</li>
+    <li><strong>Customs and health declarations, catering orders</strong>:
+        until you delete them, or until you delete your account.</li>
+    <li><strong>Published contributions</strong>: they remain in the shared
+        database after you delete your account, but are detached from your
+        identity (see below).</li>
+  </ul>
+
+  <h2>9. Deleting your account</h2>
+  <p>You can delete your account at any time, from the app:
+     <em>Profile → Delete my account</em>. No email, no form, no waiting.</p>
+  <p>This permanently deletes your profile and username, your reviews, your
+     customs and health declarations, your catering orders and any contribution
+     still awaiting review.</p>
+  <p>Contributions that have already been published — customs records, business
+     contacts and photos — <strong>remain available to other crews, with the
+     link to you removed</strong>. They have become part of the shared database
+     other crews rely on; deleting them would degrade the service for everyone.
+     Once detached, they no longer identify you.</p>
+
+  <h2>10. Your rights</h2>
+  <p>Under the GDPR you may request access to your data, correction, erasure,
+     restriction, portability, and object to processing. Write to
+     <a href="mailto:contact@crewguide.aero">contact@crewguide.aero</a>. Most of these you can exercise directly in
+     the app — your profile is editable and account deletion is immediate.</p>
+  <p>If you are in France and believe your rights are not respected, you may
+     lodge a complaint with the CNIL (<span class="muted">www.cnil.fr</span>);
+     elsewhere in the EEA, with your national supervisory authority.</p>
+
+  <h2>11. Security</h2>
+  <p>Access to the database is enforced by row-level security policies: your
+     declarations, orders and personal notes are readable only by your own
+     account. Passwords are handled by Supabase Auth and are never visible to
+     us. Traffic is encrypted in transit.</p>
+
+  <h2>12. Children</h2>
+  <p>Crew Guide is a professional tool for flight crews. It is not directed at
+     children and we do not knowingly collect data from anyone under 16.</p>
+
+  <h2>13. Changes</h2>
+  <p>If we change this policy we will update the date at the top of this page,
+     and announce any significant change in the app.</p>
+</div>
+</body>
+</html>
